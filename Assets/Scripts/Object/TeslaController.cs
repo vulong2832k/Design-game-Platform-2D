@@ -4,16 +4,20 @@ using UnityEngine;
 
 public class TeslaController : MonoBehaviour
 {
-    [SerializeField] private GameObject _bullet;
+    [SerializeField] private PoolTesla _bulletPool;
     [SerializeField] private Transform _firePoint;
     [SerializeField] private float _fireMinDelay = 3;
     [SerializeField] private float _fireMaxDelay = 5;
 
-
+    private void Awake()
+    {
+        _bulletPool = FindAnyObjectByType<PoolTesla>();
+    }
     void Start()
     {
         StartCoroutine(ShootBulletCoroutine());
     }
+
     private IEnumerator ShootBulletCoroutine()
     {
         while (true)
@@ -23,8 +27,11 @@ public class TeslaController : MonoBehaviour
             yield return new WaitForSeconds(randomDelay);
         }
     }
+
     private void SpawnBullet()
     {
-        Instantiate(_bullet, _firePoint.position, Quaternion.identity);
+        GameObject bulletObj = _bulletPool.GetFromPool(_firePoint.position, Quaternion.identity);
+        bulletObj.GetComponent<BulletTesla>().Init(_bulletPool);
     }
 }
+

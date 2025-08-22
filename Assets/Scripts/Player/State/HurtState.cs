@@ -4,14 +4,16 @@ using UnityEngine;
 
 public class HurtState : IPlayerStates
 {
-    private float _hurtDuration = 0.5f;
+    private float _hurtDuration = 1f;
     private float _timer;
 
     public void Enter(PlayerController player)
     {
         _timer = _hurtDuration;
-
         player.animator.Play("Hurt");
+
+        ApplyKnockBack(player);
+        player.StartCoroutine(EnableInvincible(player, _hurtDuration));
     }
 
     public void Update(PlayerController player, float xInput, bool jumpPressed)

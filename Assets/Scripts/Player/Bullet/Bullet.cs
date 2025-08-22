@@ -7,6 +7,16 @@ public class Bullet : MonoBehaviour
     [SerializeField] private float _lifetime = 3f;
     private Tween moveTween;
 
+    [Header("References: ")]
+    [SerializeField] private AudioManager _audioManager;
+
+    [Header("Effect:")]
+    [SerializeField] private GameObject _explosionEffect;
+
+    private void Awake()
+    {
+        _audioManager = FindAnyObjectByType<AudioManager>();
+    }
     public void Shoot(Vector3 startPos, Vector3 targetPos)
     {
         transform.position = startPos;
@@ -34,17 +44,33 @@ public class Bullet : MonoBehaviour
         moveTween?.Kill();
         gameObject.SetActive(false);
     }
+    private void SpawnExplosion()
+    {
+        if (_explosionEffect != null)
+        {
+            GameObject explosion = Instantiate(_explosionEffect, transform.position, Quaternion.identity, transform);
+            Destroy(explosion, 1.5f);
+        }
+    }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Enemy"))
         {
-            Destroy(collision.gameObject);
+            EnemyController enemy = collision.GetComponent<EnemyController>();
+            if (enemy != null)
+            {
+                enemy.Die();
+            }
             DisableBullet();
+            SpawnExplosion();
+            _audioManager?.PlayExplosionSound();
         }
         else if (collision.CompareTag("Ground"))
         {
             DisableBullet();
+            SpawnExplosion();
+            _audioManager?.PlayExplosionSound();
         }
     }
 }

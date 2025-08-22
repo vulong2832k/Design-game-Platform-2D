@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a44e5bd8f4bc4954bac03f146e5574a9, type: 3}
+  m_Name: Mana
+  m_EditorClassIdentifier: 
+  itemName: Mana
+  icon: {fileID: 21300000, guid: 16a19be914363964790a17ef8b0bb192, type: 3}
+  itemPrefab: {fileID: 463481928259227827, guid: e08ee04b5d43ed4419fe6b1e1cf0718c, type: 3}

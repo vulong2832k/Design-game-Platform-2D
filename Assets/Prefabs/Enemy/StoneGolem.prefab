@@ -126,6 +126,7 @@ MonoBehaviour:
   _distanceAttack: 0
   _enemyType: 0
   CanMove: 1
+  _dieEffect: {fileID: 2899482191862720355, guid: cd01e0c21afa73f4997c06bc067f0e8e, type: 3}
 --- !u!50 &2823676101684776202
 Rigidbody2D:
   serializedVersion: 4
@@ -189,7 +190,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 10.666667, y: 10.666667}
+    oldSize: {x: 5.3333335, y: 5.3333335}
     newSize: {x: 0.64, y: 0.64}
     adaptiveTilingThreshold: 0.5
     drawMode: 0

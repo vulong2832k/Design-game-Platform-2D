@@ -1,6 +1,7 @@
 ﻿using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -16,6 +17,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float _moveSpeed;
     [SerializeField] private float _jumpForce;
     public float JumpForce => _jumpForce;
+    public bool hasAppliedJumpForce;
 
     //Double Jump
     public int maxJumpCount = 2;
@@ -48,7 +50,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Transform _firePoint;
     [SerializeField] private PoolBullet _bulletPool;
 
-    [SerializeField] private float _shootCooldown = 30f;
+    [SerializeField] private float _shootCooldown = 15f;
     private float _cooldownTimer;
 
     [Header("References: ")]
@@ -58,6 +60,7 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] private BarUI[] _barUI;
     [SerializeField] private SpriteRenderer _spriteRenderer;
+    [SerializeField] private Image _shootTimerUI;
 
     public Rigidbody2D playerRb { get; private set; }
     public Animator animator { get; private set; }
@@ -113,9 +116,10 @@ public class PlayerController : MonoBehaviour
         HandleShooting();
 
         _currentState?.Update(this, xInput, jumpPressed);
+
         UpdateAnimation();
     }
-    #region HeartPlayer
+    #region UI
     public void TakeDamage(int damage)
     {
         if (_gameManager.IsShieldActive())
@@ -138,7 +142,13 @@ public class PlayerController : MonoBehaviour
         }
 
         if (currentHp == 0)
+        {
             Die();
+        }
+        else
+        {
+            TransitionToState(new HurtState());
+        }
     }
     public void Heal(int healAmount)
     {
@@ -147,6 +157,14 @@ public class PlayerController : MonoBehaviour
         SpawnHealEffect();
         foreach (var HPbar in _barUI)
             HPbar.UpdateHpBarUI();
+    }
+    public void RecoveryMana(int manaAmount)
+    {
+        currentMana += manaAmount;
+        currentMana = Mathf.Clamp(currentMana, 0, maxMana);
+        SpawnHealEffect();
+        foreach (var manaBar in _barUI)
+            manaBar.UpdateManaBarUI();
     }
     public void UseMana(int amount)
     {
@@ -157,6 +175,19 @@ public class PlayerController : MonoBehaviour
                 manaBar.UpdateManaBarUI();
         }
     }
+    private void UpdateShootTimerUI()
+    {
+        if (_shootTimerUI != null)
+        {
+            _shootTimerUI.fillAmount = 0f;
+
+            _shootTimerUI.DOKill();
+
+            _shootTimerUI.DOFillAmount(1f, _shootCooldown)
+                .SetEase(Ease.Linear);
+        }
+    }
+
     private void Die()
     {
         transform.SetParent(null);
@@ -172,35 +203,42 @@ public class PlayerController : MonoBehaviour
         if (xDir > 0) transform.localScale = new Vector3(1, 1, 1);
         else if (xDir < 0) transform.localScale = new Vector3(-1, 1, 1);
     }
-    private void HandleShooting()
+    public void HandleShooting()
     {
-        if (Input.GetMouseButtonDown(0) && _cooldownTimer >= _shootCooldown)
-        {
-            if (currentMana < 0)
-                return;
+        if (_cooldownTimer < _shootCooldown) return;
+        if (currentMana <= 0) return;
+        if (_currentState is StrikeState) return;
 
+        if (Input.GetMouseButtonDown(0))
+        {
             Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             mouseWorldPos.z = 0;
 
-            //Xoay nhân vật rồi bắn
             Vector2 dir = (mouseWorldPos - transform.position).normalized;
-            if (dir.x > 0)
-                transform.localScale = new Vector3(1, 1, 1);
-            else if (dir.x < 0)
-                transform.localScale = new Vector3(-1, 1, 1);
-
-            GameObject bulletObj = _bulletPool.GetBullet();
-            bulletObj.SetActive(true);
-            Bullet bullet = bulletObj.GetComponent<Bullet>();
-
-            bullet.Shoot(_firePoint.position, mouseWorldPos);
+            transform.localScale = new Vector3(dir.x > 0 ? 1 : -1, 1, 1);
 
             UseMana(1);
-
             _cooldownTimer = 0f;
+            UpdateShootTimerUI();
+
+            string triggerName = "NormalAttack";
+            if (_currentState is CrouchState) triggerName = "CrouchAttack";
+            else if (_currentState is JumpState) triggerName = "JumpAttack";
+
+            TransitionToState(new AttackState(triggerName, _currentState));
         }
     }
+    public void ShootBullet()
+    {
+        Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        mouseWorldPos.z = 0;
 
+        GameObject bulletObj = _bulletPool.GetBullet();
+        bulletObj.SetActive(true);
+        bulletObj.GetComponent<Bullet>().Shoot(_firePoint.position, mouseWorldPos);
+
+        _audioManager?.PlayFireBallSound();
+    }
     #endregion
     #region Animation
     private void UpdateAnimation()
@@ -221,6 +259,13 @@ public class PlayerController : MonoBehaviour
     public void SetInvincible(bool value)
     {
         _isInvincible = value;
+    }
+    public void OnAttackAnimationEnd()
+    {
+        if (_currentState is AttackState attackState)
+        {
+            attackState.BackToPreviousState(this);
+        }
     }
     #endregion
     #region Audio

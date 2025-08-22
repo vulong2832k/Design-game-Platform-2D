@@ -5,7 +5,7 @@ using UnityEngine;
 public class PoolBullet : MonoBehaviour
 {
     [SerializeField] private GameObject _prefab;
-    [SerializeField] private int _size = 10;
+    [SerializeField] private int _size = 2;
 
     private Queue<GameObject> _poolBullet = new Queue<GameObject>();
 

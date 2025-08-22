@@ -205,6 +205,7 @@ MonoBehaviour:
   _distanceAttack: 1.7
   _enemyType: 3
   CanMove: 1
+  _dieEffect: {fileID: 2899482191862720355, guid: cd01e0c21afa73f4997c06bc067f0e8e, type: 3}
 --- !u!61 &4677941115475840893
 BoxCollider2D:
   m_ObjectHideFlags: 0

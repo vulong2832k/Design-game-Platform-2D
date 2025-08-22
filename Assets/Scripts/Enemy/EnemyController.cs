@@ -15,6 +15,9 @@ public class EnemyController : MonoBehaviour
 
     private IEnemyState _currentState;
 
+    [Header("Effect: ")]
+    [SerializeField] private GameObject _dieEffect;
+
     public Animator Animator { get; private set; }
     public Transform Player { get; private set; }
     public EnemyStateMachine StateMachine { get; private set; }
@@ -99,8 +102,19 @@ public class EnemyController : MonoBehaviour
     }
     public void Die()
     {
-        StateMachine.ChangeState(new EnemyStates.DeadState(), this);
+        SpawnDieEffect();
+        gameObject.SetActive(false);
     }
+    #region Effect
+    private void SpawnDieEffect()
+    {
+        if (_dieEffect != null)
+        {
+            GameObject dieEffect = Instantiate(_dieEffect, transform.position, Quaternion.identity);
+            Destroy(dieEffect, 2f);
+        }
+    }
+    #endregion
     private void OnDrawGizmosSelected()
     {
         Vector3 leftPoint = transform.position + Vector3.left * _enemyDistance;

@@ -1,36 +1,52 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class BulletTesla : MonoBehaviour
 {
+    private PoolTesla _poolTesla;
     [SerializeField] private float _lifeTime = 2f;
     [SerializeField] private int _damage = 2;
-    [SerializeField] private GameObject _hitEffectPrefab;
-    [SerializeField] private Transform _spawnEffect;
+    [SerializeField] private ParticleSystem _hitEffect;
+    private float _timer;
 
-    void Start()
+    public void Init(PoolTesla pool)
     {
-        SpawnEffectHit();
-        Destroy(gameObject, _lifeTime);
+        _poolTesla = pool;
     }
-    private void SpawnEffectHit()
+
+    private void OnEnable()
     {
-        if (_hitEffectPrefab != null)
-        {
-            GameObject effect = Instantiate(_hitEffectPrefab, _spawnEffect.position, Quaternion.identity);
-            Destroy(effect, _lifeTime);
-        }
+        _timer = 0f;
+        Invoke(nameof(DisableBullet), _lifeTime);
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.CompareTag("Player"))
+        if (collision.CompareTag("Player"))
         {
-            PlayerController player = collision.gameObject.GetComponent<PlayerController>();
+            PlayerController player = collision.GetComponent<PlayerController>();
             if (player != null)
             {
                 player.TakeDamage(_damage);
             }
+            if (_hitEffect != null)
+            {
+                _hitEffect.transform.position = transform.position;
+                _hitEffect.Play();
+            }
+            DisableBullet();
+        }
+    }
+
+    private void DisableBullet()
+    {
+        if (_poolTesla != null)
+        {
+            _poolTesla.ReturnToPool(gameObject);
+        }
+        else
+        {
+            gameObject.SetActive(false);
         }
     }
 }
+

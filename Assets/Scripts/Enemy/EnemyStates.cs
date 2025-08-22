@@ -111,21 +111,4 @@ public class EnemyStates : MonoBehaviour
         }
 
     }
-
-    public class DeadState : IEnemyState
-    {
-        public void Enter(EnemyController enemy)
-        {
-            enemy.Animator.Play("Dead");
-            enemy.enabled = false;
-        }
-
-        public void Update(EnemyController enemy)
-        {
-        }
-        public void Exit(EnemyController enemy)
-        {
-        }
-
-    }
 }

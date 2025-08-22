@@ -198,3 +198,4 @@ MonoBehaviour:
   _distanceAttack: 0
   _enemyType: 0
   CanMove: 1
+  _dieEffect: {fileID: 2899482191862720355, guid: cd01e0c21afa73f4997c06bc067f0e8e, type: 3}
