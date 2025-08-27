@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class MainMenuAnimation : MonoBehaviour
@@ -12,38 +11,47 @@ public class MainMenuAnimation : MonoBehaviour
     [SerializeField] private float _jumpInterval;
 
     private Rigidbody2D _rb;
+    private Animator _anim;
 
     private bool _movingToEnd = true;
 
     void Start()
     {
-        _rb =GetComponent<Rigidbody2D>();
+        _rb = GetComponent<Rigidbody2D>();
+        _anim = GetComponent<Animator>();
         StartCoroutine(JumpRoutine());
     }
 
     void Update()
     {
         PlayerMoving();
+
+        // set animation speed
+        float horizontalSpeed = (_movingToEnd ? 1 : 1) * _moveSpeed;
+        _anim.SetFloat("MenuSpeed", Mathf.Abs(horizontalSpeed));
+
+        // set animation jump
+        _anim.SetBool("MenuIsJumping", !IsGrounded());
     }
+
     private void PlayerMoving()
     {
         Vector3 target = _movingToEnd ? _playerEndPoint.position : _playerStartPoint.position;
 
         transform.position = Vector3.MoveTowards(transform.position, target, _moveSpeed * Time.deltaTime);
 
-        if(Vector3.Distance(transform.position, target) < 0.1f)
+        if (Vector3.Distance(transform.position, target) < 0.1f)
         {
             _movingToEnd = !_movingToEnd;
 
             if (!_movingToEnd)
-            {
                 StartCoroutine(TeleportToStartPoint());
-            }
         }
     }
+
     private IEnumerator JumpRoutine()
     {
-        while(true)
+        while (true)
         {
             yield return new WaitForSeconds(_jumpInterval);
 
@@ -53,10 +61,12 @@ public class MainMenuAnimation : MonoBehaviour
             }
         }
     }
+
     private bool IsGrounded()
     {
         return Physics2D.Raycast(transform.position, Vector2.down, 0.1f);
     }
+
     private IEnumerator TeleportToStartPoint()
     {
         yield return new WaitForSeconds(0.5f);

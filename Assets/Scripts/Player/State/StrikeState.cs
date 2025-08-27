@@ -15,7 +15,7 @@ public class StrikeState : IPlayerStates
         if (player.playerRb.velocity.y > 0)
             player.playerRb.velocity = new Vector2(player.playerRb.velocity.x, 0f);
 
-        player.playerRb.gravityScale = 0.05f;
+        player.playerRb.gravityScale = 0.3f;
     }
 
     public void Update(PlayerController player, float xInput, bool strikeHeld)
@@ -31,7 +31,7 @@ public class StrikeState : IPlayerStates
             {
                 player.animator.Play("Strike", 0, 0f);
             }
-            player.playerRb.gravityScale = 0.05f;
+            player.playerRb.gravityScale = 0.3f;
             return;
         }
         else
@@ -49,7 +49,10 @@ public class StrikeState : IPlayerStates
             if (stateInfo.IsName("Strike"))
             {
                 if (player.IsGrounded)
-                    player.TransitionToState(new IdleState());  
+                {
+                    player.playerRb.velocity = Vector2.zero;
+                    player.TransitionToState(new IdleState());
+                }
             }
         }
     }

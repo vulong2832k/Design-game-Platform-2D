@@ -61,7 +61,7 @@ public class Bullet : MonoBehaviour
             if (enemy != null)
             {
                 enemy.Die();
-            }
+            } 
             DisableBullet();
             SpawnExplosion();
             _audioManager?.PlayExplosionSound();
