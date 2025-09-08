@@ -12,8 +12,8 @@ public class DieState : IPlayerStates
         _hasPlayedDeath = true;
 
         player.animator.Play("Die");
+        player.playerRb.bodyType = RigidbodyType2D.Kinematic;
         player.playerRb.velocity = Vector2.zero;
-        player.playerRb.bodyType = RigidbodyType2D.Static;
         player.GetComponent<SpriteRenderer>().DOFade(0f, 1.5f).OnComplete(() =>
         {
             player._audioManager?.PlayDeathSound();

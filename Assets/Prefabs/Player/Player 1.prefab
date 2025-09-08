@@ -244,7 +244,7 @@ MonoBehaviour:
   _isDied: 0
   _firePoint: {fileID: 1223422369041771928}
   _bulletPool: {fileID: 0}
-  _shootCooldown: 15
+  _shootCooldown: 1
   _gameManager: {fileID: 0}
   _audioManager: {fileID: 0}
   _barUI:

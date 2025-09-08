@@ -48,7 +48,7 @@ public class Bullet : MonoBehaviour
     {
         if (_explosionEffect != null)
         {
-            GameObject explosion = Instantiate(_explosionEffect, transform.position, Quaternion.identity, transform);
+            GameObject explosion = Instantiate(_explosionEffect, transform.position, Quaternion.identity);
             Destroy(explosion, 1.5f);
         }
     }
@@ -61,16 +61,17 @@ public class Bullet : MonoBehaviour
             if (enemy != null)
             {
                 enemy.Die();
-            } 
-            DisableBullet();
+            }
             SpawnExplosion();
             _audioManager?.PlayExplosionSound();
+            DisableBullet();
         }
         else if (collision.CompareTag("Ground"))
         {
-            DisableBullet();
             SpawnExplosion();
             _audioManager?.PlayExplosionSound();
+            DisableBullet();
         }
     }
+
 }

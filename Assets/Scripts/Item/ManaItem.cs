@@ -9,7 +9,7 @@ public class ManaItem : MonoBehaviour ,ICollectable
 
     public void Collect(PlayerController player)
     {
-        player.Heal(_manaAmount);
+        player.RecoveryMana(_manaAmount);
         Destroy(gameObject);
     }
     private void OnTriggerEnter2D(Collider2D other)

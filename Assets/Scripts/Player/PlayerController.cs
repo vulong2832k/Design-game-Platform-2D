@@ -122,6 +122,8 @@ public class PlayerController : MonoBehaviour
     #region UI
     public void TakeDamage(int damage)
     {
+        if (_isInvincible) return;
+
         if (_gameManager.IsShieldActive())
         {
             SpawnShieldBreakEffect();
@@ -130,6 +132,7 @@ public class PlayerController : MonoBehaviour
         }
         currentHp -= damage;
         currentHp = Mathf.Clamp(currentHp, 0, maxHp);
+
         foreach (var HPbar in _barUI)
             HPbar.UpdateHpBarUI();
 
@@ -148,7 +151,14 @@ public class PlayerController : MonoBehaviour
         else
         {
             TransitionToState(new HurtState());
+            StartCoroutine(Invincible(2f));
         }
+    }
+    private IEnumerator Invincible(float duration)
+    {
+        _isInvincible = true;
+        yield return new WaitForSeconds(duration);
+        _isInvincible = false;
     }
     public void Heal(int healAmount)
     {

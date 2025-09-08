@@ -12,9 +12,6 @@ public class StrikeState : IPlayerStates
 
         _originalGravity = player.playerRb.gravityScale;
 
-        if (player.playerRb.velocity.y > 0)
-            player.playerRb.velocity = new Vector2(player.playerRb.velocity.x, 0f);
-
         player.playerRb.gravityScale = 0.3f;
     }
 
@@ -36,23 +33,20 @@ public class StrikeState : IPlayerStates
         }
         else
         {
-            if (player.playerRb.gravityScale != _originalGravity)
+            if (Mathf.Abs(player.playerRb.gravityScale - _originalGravity) > 0.01f && _gravityTween == null)
             {
-                _gravityTween?.Kill();
-
                 _gravityTween = DOTween.To(
                     () => player.playerRb.gravityScale,
                     x => player.playerRb.gravityScale = x,
-                    _originalGravity, 0.3f).SetEase(Ease.OutQuad);
+                    _originalGravity, 0.25f
+                ).SetEase(Ease.OutQuad)
+                 .OnComplete(() => _gravityTween = null);
             }
 
-            if (stateInfo.IsName("Strike"))
+            if (stateInfo.IsName("Strike") && player.IsGrounded)
             {
-                if (player.IsGrounded)
-                {
-                    player.playerRb.velocity = Vector2.zero;
-                    player.TransitionToState(new IdleState());
-                }
+                player.playerRb.velocity = Vector2.zero;
+                player.TransitionToState(new IdleState());
             }
         }
     }
@@ -61,5 +55,6 @@ public class StrikeState : IPlayerStates
     {
         _gravityTween?.Kill();
         player.playerRb.gravityScale = _originalGravity;
+        _gravityTween = null;
     }
 }
