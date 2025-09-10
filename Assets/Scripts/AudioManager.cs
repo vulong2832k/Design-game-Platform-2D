@@ -38,6 +38,8 @@ public class AudioManager : MonoBehaviour
 
     private static AudioManager _instance;
 
+    private int _lastIndex = -1;
+
     private void Awake()
     {
         if (_instance == null)
@@ -103,7 +105,15 @@ public class AudioManager : MonoBehaviour
         {
             if (_gamePlayMusicList != null && _gamePlayMusicList.Count > 0)
             {
-                _selectedGameplayClip = _gamePlayMusicList[UnityEngine.Random.Range(0, _gamePlayMusicList.Count)];
+                int newIndex;
+                do
+                {
+                    newIndex = UnityEngine.Random.Range(0, _gamePlayMusicList.Count);
+                } 
+                while (newIndex == _lastIndex && _gamePlayMusicList.Count > 1);
+
+                _lastIndex = newIndex;
+                _selectedGameplayClip = _gamePlayMusicList[newIndex];
                 _backGroundAudioSource.clip = _selectedGameplayClip;
                 _backGroundAudioSource.loop = true;
             }

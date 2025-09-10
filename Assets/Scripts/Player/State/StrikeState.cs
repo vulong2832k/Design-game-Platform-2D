@@ -28,7 +28,7 @@ public class StrikeState : IPlayerStates
             {
                 player.animator.Play("Strike", 0, 0f);
             }
-            player.playerRb.gravityScale = 0.3f;
+            player.playerRb.gravityScale = 0.5f;
             return;
         }
         else
